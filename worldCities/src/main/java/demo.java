@@ -1,20 +1,59 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- *
- * @author MG
- */
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.table.DefaultTableModel;
+
 public class demo extends javax.swing.JFrame {
+    DefaultTableModel model;
 
-    /**
-     * Creates new form demo
-     */
     public demo() {
         initComponents();
+        model = (DefaultTableModel)tblCities.getModel();
+        try {
+            ArrayList<City> cities = getCities();
+            for (City city : cities){
+                Object[] row = {city.getId(), 
+                    city.getName(), 
+                    city.getCountryCode(), 
+                    city.getDistrict(), 
+                    city.getPopulation()};
+                model.addRow(row);
+            }
+        } catch (SQLException ex) {
+            
+        }
+    }
+    
+    public ArrayList<City> getCities() throws SQLException{
+        Connection connection = null;
+        DbHelper dbHelper = new DbHelper();
+        Statement statement = null;
+        ResultSet resultSet;
+        ArrayList<City> cities = null;
+        
+        try{
+            connection =dbHelper.getConnection();
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery("select * from City");
+            cities = new ArrayList<City>();
+            while(resultSet.next()){
+                cities.add(new City(
+                        resultSet.getInt("ID"),
+                        resultSet.getString("Name"),
+                        resultSet.getString("CountryCode"),
+                        resultSet.getString("District"),
+                        resultSet.getInt("Population")
+                ));
+            }
+        }catch(SQLException exception){
+            dbHelper.showErrorMessage(exception);
+        }finally{
+            statement.close();
+            connection.close();
+        }
+        return cities;
     }
 
     /**
