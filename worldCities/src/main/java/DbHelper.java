@@ -1,11 +1,12 @@
 import java.sql.*;
+import java.util.Properties;
 public class DbHelper {
     private String dbUrl="jdbc:mysql://localhost:3306/world?useSSL=false&serverTimezone=UTC";
     private String userName="root";
     private String password="Aslanlar_528";
     
     
-   public Connection getConnection()throws SQLException{
+   public Connection getConnection() throws SQLException{
        return DriverManager.getConnection(dbUrl, userName, password);
    }
    
